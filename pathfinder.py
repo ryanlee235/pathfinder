@@ -1,6 +1,7 @@
 import pygame 
 
-WIDTH = 500 
+WIDTH = 800 
+HIGHT = 800
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 #barrier color
 BLACK = (0, 0, 0)
@@ -16,7 +17,6 @@ PURPLE = (128, 0, 128)
 TEAL = (0, 128, 128)
 #open list color
 BLUE =(0, 0, 255)
-
 
 class Node:
     def __init__(self, rows, col, width, total_rows):
@@ -37,8 +37,7 @@ class Node:
 
     def barrier_color(self):
         return self.color == BLACK
-        
-    
+         
     def open_color(self):
         return self.color == BLUE
 
@@ -50,6 +49,9 @@ class Node:
 
     def end_color(self):
         return self.color == TEAL
+
+    def path_color(self):
+        return self.color == PURPLE
 
     def barrier(self):
         self.color = BLACK
@@ -65,9 +67,38 @@ class Node:
 
     def end(self):
         self.color = TEAL
+    
+    def path(self):
+        self.color = PURPLE
+
+    def open_list(self):
+        #this is going to contain the up, down, right, left of the start node
+        open_list = []
 #this gets manhattan distances.
 def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
 
+
+
+def draw_grid():
+    WIN.fill(BLACK)
+    pygame.display.update()
+
+def main():
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        draw_grid()
+
+    pygame.quit()
+
+       
+
+
+if __name__ == '__main__':
+    main()

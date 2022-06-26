@@ -1,104 +1,68 @@
 import pygame 
 
-WIDTH = 800 
-HIGHT = 800
-WIN = pygame.display.set_mode((WIDTH,WIDTH))
-#barrier color
-BLACK = (0, 0, 0)
-#reguar color block
-WHITE = (255, 255, 255)
-#node color that has already been searched
+WIDTH, HEIGHT = 800, 800
+
+SURFACE = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Pathfinder")
+#NODES CHECKED COLOR
 RED = (255, 0, 0)
-# start node color
-GREEN = (0, 128, 0)
-#path color
-PURPLE = (128, 0, 128)
-# end node color
+#START NODE
+BLUE = (0, 255, 0)
+#LINES
+GRAY = (128, 128, 128)
+#PATH
+PURPLE =(128, 0, 128)
+#END NODE
 TEAL = (0, 128, 128)
-#open list color
-BLUE =(0, 0, 255)
+#BARRIER
+BLACK = (0, 0, 0)
+#BACK GROUND
+WHITE = (255, 255, 255)
 
 class Node:
-    def __init__(self, rows, col, width, total_rows):
-        self.rows = rows 
-        self.col = col 
-        #gets x position
-        self.x = rows * width
-        #gets y position 
-        self.y = col * width
-        #going to get all the adjacent cells next to our start nodes 
-        self.open_list = []
-        #going to use for our h function later
-        self.total_rows = total_rows
+    def __init(self, width, height, rows, col, TotalRows):
         self.color = WHITE
-    def pos(self):
-        #gets the current position 
-        return self.rows, self.col 
+        self.rows = rows
+        self.col = col
+        self.x = rows * width 
+        self.y = col * height
+        self.TotalRows = TotalRows
+        self.open_list = []
 
+    def start_node_color(self):
+        return self.color == BLUE
+    
+    def end_node_color(self):
+        return self.color == TEAL
+    
     def barrier_color(self):
         return self.color == BLACK
-         
-    def open_color(self):
-        return self.color == BLUE
-
-    def closed_color(self):
-        return self.color == RED
-
-    def start_color(self):
-        return self.color == GREEN
-
-    def end_color(self):
-        return self.color == TEAL
-
+    
     def path_color(self):
         return self.color == PURPLE
 
-    def barrier(self):
-        self.color = BLACK
+    def nodes_checked(self):
+        return self.color == RED
     
-    def open(self):
+    def make_start_node(self):
         self.color = BLUE
 
-    def closed(self):
-        self.color = RED 
-    
-    def start(self):
-        self.color = GREEN
-
-    def end(self):
+    def make_end_node(self):
         self.color = TEAL
+
+    def make_barrier(self):
+        self.color = BLACK
     
-    def path(self):
+    def make_path(self):
         self.color = PURPLE
+    
+    def make_nodes_checked(self):
+        self.color = RED
 
-    def open_list(self):
-        #this is going to contain the up, down, right, left of the start node
-        open_list = []
-#this gets manhattan distances.
-def h(p1, p2):
-    x1, y1 = p1
-    x2, y2 = p2
-    return abs(x1 - x2) + abs(y1 - y2)
+    def neighbor_nodes(self):
+        pass
 
+    def draw_squares(self, surface):
+        pass
 
-
-def draw_grid():
-    WIN.fill(BLACK)
-    pygame.display.update()
-
-def main():
-    run = True
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        draw_grid()
-
-    pygame.quit()
-
-       
-
-
-if __name__ == '__main__':
-    main()
+    

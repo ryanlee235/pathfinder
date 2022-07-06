@@ -1,9 +1,10 @@
+from ctypes import c_ubyte
 import pygame 
 from queue import PriorityQueue
 
 WIDTH = 600
 
-SURFACE = pygame.display.set_mode((WIDTH))
+SURFACE = pygame.display.set_mode((WIDTH, WIDTH))
 
 #node colors
 
@@ -73,17 +74,121 @@ class Node:
         if self.column > 0 and not grid[self.rows][self.column - 1].make_barrier():#left
             self.neighbors.append(grid[self.rows][self.column -1])
 
+#calculating our mannhattan distance
 def h(position1, position2):
     x1, x2 = position1
     y1, y2 = position2
     return abs(x1 - x2) + abs(y1 - y2)
-    
-               
+
+def path(came_from, current, draw):
+    while current in came_from:
+        current = came_from[current]
+        current.make_path()
+        draw()
+
+def astar(draw, grid, start, end):
+    count = 0
+    #will allow us to check the next node that is entered in
+    open_set = PriorityQueue
+    #putting our start node in to the list first
+    open_set.put((0, count, start))
+    came_from = {}
+    #setting a dictionary that will contain all of the nodes
+    g_score = {}
+    f_score = {}
+    # will allow us to keep track of what will be in the open_set.
+    open_set_hash = {start}
+
+    for row in grid:
+        for node in row:
+            g_score[node] = float('inf')
+            f_score[node] = float('inf')
+
+    g_score[start] = 0
+    f_score[start] = h(start.position(), end.position())
+
+    while not open_set.empty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        #grabs our start node and the current node
+        current = open_set.get()[2]
+        #removing the current node becasue we looked at it
+        open_set_hash.remove(current)
+
+        if current == end:
+            #allows us to draw out the path
+            path(came_from, current, draw)
+            current.make_end()
+            return True
+
+        for neighbor in current.neighbors:
+            t_g_score = g_score[neighbor] + 1
+
+            if t_g_score < g_score[neighbor]:
+                #making our path
+                came_from[neighbor] = current 
+                #updating the g_score of the neighbor nodes
+                g_score[neighbor] = t_g_score
+                #adding up the g_score and h function
+                f_score[neighbor] = g_score + h(start.position(), end.position())
+            #putting the neighbor into the open set 
+            if neighbor not in open_set_hash:
+                count +=1
+                open_set.put((f_score[neighbor], count, neighbor))
+                open_set_hash.add(neighbor)
+                #giving it the open color
+                neighbor.make_open()
+        # calling the draw function that we are taking as an argument        
+        draw()
+        #the node has been looked at, make it red
+        if current == start:
+            current.make_closed()
+    #end our while loop
+    return False 
+def make_grid(rows, width):
+    #empty list to store our node for later
+    grid = []
+    #getting the size of the cubes in our grid
+    cube_size = width // rows
+
+    #for the size of the rows, were adding an empty list in
+    for x in range(rows):
+        grid.append([])
+        for y in range(rows):
+            node = Node(x, y, cube_size, rows)
+            #appending our node to the empyt list that was created for x
+            grid[x].append(node)
+    return grid
+
+def draw_grid(surface, rows, width):
+    cube_size = width // rows
+
+    for x in range(rows):
+        #drawing our x coordinates lines
+        pygame.draw.line(surface, BLACK, (0, x * cube_size), (width, x * cube_size))
+        for y in range(rows):
+            #draws our lines for our y coordinates lines
+            pygame.draw.line(surface, BLACK, (y * cube_size, 0), (y * cube_size, width))
+
+def draw(surface, grid, rows, width):
+
+    for row in grid:
+        for node in row:
+            node.draw(surface)
+    draw_grid(surface, rows, width)
+    pygame.display.update()
 def main(surface, width):
     ROWS = 40
     game_on = True
+    grid = make_grid(ROWS, width)
+    start = None
+    end = None
 
     while game_on:
+        draw(surface, grid, ROWS, width)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_on = False
+
+main(SURFACE, WIDTH)
